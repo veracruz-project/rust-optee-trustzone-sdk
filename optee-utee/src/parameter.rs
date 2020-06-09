@@ -1,6 +1,7 @@
 use crate::{Error, ErrorKind, Result};
 use optee_utee_sys as raw;
 use std::marker;
+use std::convert::TryInto;
 
 pub struct Parameters(pub Parameter, pub Parameter, pub Parameter, pub Parameter);
 
@@ -15,6 +16,8 @@ impl Parameters {
         Parameters(p0, p1, p2, p3)
     }
 }
+
+pub struct DifferentParameters(pub DifferentParameter, pub DifferentParameter, pub DifferentParameter, pub DifferentParameter);
 
 pub struct ParamValue<'parameter> {
     raw: *mut raw::Value,
@@ -79,6 +82,7 @@ pub struct Parameter {
     pub param_type: ParamType,
 }
 
+
 impl Parameter {
     pub fn from_raw(ptr: *mut raw::TEE_Param, param_type: ParamType) -> Self {
         Self {
@@ -118,6 +122,73 @@ impl Parameter {
     }
 }
 
+pub struct DifferentParameter {
+    pub raw: raw::TEE_Param,
+    pub param_type: ParamType,
+}
+
+impl DifferentParameter {
+    pub fn from_vec(source: &mut Vec<u8>, param_type: ParamType) -> Result<Self> {
+        let mut raw = raw::TEE_Param {
+            memref: raw::Memref {
+                buffer: source.as_mut_ptr() as *mut libc::c_void,
+                size: source.len().try_into().map_err(|err| {
+                    trace_println!("optee_utee::Parameter::from_vec try_into failed from usize to u32:{:?}", err);
+                    ErrorKind::TargetDead
+                })?,
+            },
+        };
+        trace_println!("address of raw:{:p}", &raw);
+        Ok(Self {
+            raw: raw.clone(),
+            param_type: param_type,
+        })
+    }
+
+    pub fn from_values(a: u32, b: u32, param_type: ParamType) -> Self {
+        let mut raw = raw::TEE_Param {
+            value: raw::Value {
+                a: a,
+                b: b,
+            },
+        };
+        Self {
+            raw: raw.clone(),
+            param_type: param_type,
+        }
+    }
+
+    pub unsafe fn as_value(&mut self) -> Result<ParamValue> {
+        match self.param_type {
+            ParamType::ValueInput | ParamType::ValueInout | ParamType::ValueOutput => {
+                Ok(ParamValue {
+                    raw: &mut self.raw.value,
+                    param_type: self.param_type,
+                    _marker: marker::PhantomData,
+                })
+            }
+            _ => Err(Error::new(ErrorKind::BadParameters)),
+        }
+    }
+
+    pub unsafe fn as_memref(&mut self) -> Result<ParamMemref> {
+        match self.param_type {
+            ParamType::MemrefInout | ParamType::MemrefInput | ParamType::MemrefOutput => {
+                Ok(ParamMemref {
+                    raw: &mut self.raw.memref,
+                    param_type: self.param_type,
+                    _marker: marker::PhantomData,
+                })
+            }
+            _ => Err(Error::new(ErrorKind::BadParameters)),
+        }
+    }
+
+    pub fn raw(&mut self) -> *mut raw::TEE_Param {
+        &mut self.raw
+    }
+}
+
 pub struct ParamTypes(u32);
 
 impl ParamTypes {
@@ -137,7 +208,7 @@ impl From<u32> for ParamTypes {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub enum ParamType {
     None = 0,
     ValueInput = 1,

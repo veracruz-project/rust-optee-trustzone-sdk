@@ -4,7 +4,7 @@ pub use self::crypto_op::*;
 pub use self::time::*;
 pub use self::arithmetical::*;
 pub use self::internal::*;
-pub use self::parameter::{ParamType, ParamTypes, Parameter, Parameters};
+pub use self::parameter::{ParamType, ParamTypes, Parameter, DifferentParameter, DifferentParameters, Parameters};
 pub use optee_utee_macros::{
     ta_close_session, ta_create, ta_destroy, ta_invoke_command, ta_open_session,
 };
