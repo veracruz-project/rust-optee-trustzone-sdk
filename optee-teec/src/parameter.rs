@@ -99,10 +99,10 @@ impl<'a> ParamTmpRef<'a> {
     /// Creates a temporary memory reference. `buffer` is a region of memory
     /// which needs to be temporarily registered for the duration of the
     /// `Operation`.
-    pub fn new_output(buffer: &'a mut [u8]) -> Self {
+    pub fn new_output(buffer: &'a mut Vec<u8>) -> Self {
         let raw = raw::TEEC_TempMemoryReference {
             buffer: buffer.as_ptr() as _,
-            size: buffer.len(),
+            size: buffer.capacity(),
         };
         Self {
             raw,
