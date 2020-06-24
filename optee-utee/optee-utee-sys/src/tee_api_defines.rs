@@ -224,8 +224,8 @@ pub const TEE_ATTR_ECC_PUBLIC_VALUE_X: u32 = 0xD0000141;
 pub const TEE_ATTR_ECC_PUBLIC_VALUE_Y: u32 = 0xD0000241;
 pub const TEE_ATTR_ECC_PRIVATE_VALUE: u32 = 0xC0000341;
 pub const TEE_ATTR_ECC_CURVE: u32 = 0xF0000441;
-pub const TEE_ATTR_BIT_PROTECTED: u32 = (1 << 28);
-pub const TEE_ATTR_BIT_VALUE: u32 = (1 << 29);
+pub const TEE_ATTR_BIT_PROTECTED: u32 = 1 << 28;
+pub const TEE_ATTR_BIT_VALUE: u32 = 1 << 29;
 
 // List of Supported ECC Curves
 pub const TEE_ECC_CURVE_NIST_P192: u32 = 0x00000001;

@@ -388,8 +388,8 @@ pub enum AttributeId {
     EccPrivateValue = 0xC0000341,
     /// ECC Curve algorithm
     EccCurve = 0xF0000441,
-    BitProtected = (1 << 28),
-    BitValue = (1 << 29),
+    BitProtected = 1 << 28,
+    BitValue = 1 << 29,
 }
 
 /// Define types of [TransientObject](TransientObject) with predefined maximum sizes.
