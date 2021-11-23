@@ -10,12 +10,12 @@
 [submodule "rust/rust"]
 	path = rust/rust
 	url = https://github.com/veracruz-project/rust.git
-	branch = veracruz
+	branch = veracruz-v1
 [submodule "rust/libc"]
 	path = rust/libc
 	url = https://github.com/veracruz-project/libc.git
-	branch = veracruz
+	branch = veracruz-v1
 [submodule "rust/compiler-builtins"]
 	path = rust/compiler-builtins
 	url = https://github.com/veracruz-project/compiler-builtins.git
-	branch = veracruz
+	branch = veracruz-v1
